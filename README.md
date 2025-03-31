@@ -96,3 +96,6 @@ The application is deployed on Render. To deploy your own instance:
 5. Set the start command: `gunicorn app:app`
 6. Add the `OPENAI_API_KEY` environment variable
 7. Deploy the service
+
+<img width="1357" alt="Screenshot 2025-03-31 at 15 49 01" src="https://github.com/user-attachments/assets/09b12f90-8a21-4920-99e3-ee152eabc3e4" />
+
