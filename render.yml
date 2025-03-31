@@ -1,0 +1,12 @@
+services:
+  # A web service with environment variables
+  - type: web
+    name: intrinsica-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PORT
+        value: 8080
