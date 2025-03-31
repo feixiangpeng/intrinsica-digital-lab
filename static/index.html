@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTRINSICA Digital Lab</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">INTRINSICA Digital Lab</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Data Upload</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="dataFile" class="form-label">Upload CSV File</label>
+                                <input class="form-control" type="file" id="dataFile" accept=".csv">
+                                <div class="form-text">Upload CSV files for analysis.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Available Datasets</h5>
+                    </div>
+                    <div class="card-body">
+                        <button id="refreshDatasets" class="btn btn-outline-secondary mb-3">Refresh List</button>
+                        <div id="datasetsList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Dataset Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="datasetPreview">
+                            <p class="text-muted">Select a dataset to preview.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Natural Language Query</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="queryForm">
+                            <div class="mb-3">
+                                <label for="datasetSelect" class="form-label">Select Dataset</label>
+                                <select class="form-select" id="datasetSelect">
+                                    <option value="">-- Select a dataset --</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="queryInput" class="form-label">Your Query</label>
+                                <input type="text" class="form-control" id="queryInput" placeholder="Example: Show me the top 5 rows sorted by column name">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Query</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Query Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="explanationBox" class="alert alert-info d-none mb-3">
+                            <h6>Explanation</h6>
+                            <div id="explanationText"></div>
+                        </div>
+                        <div id="codeBox" class="d-none mb-3">
+                            <h6>Generated Code</h6>
+                            <pre><code id="generatedCode" class="bg-light p-2 rounded"></code></pre>
+                        </div>
+                        <div id="resultsTable"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Visualization</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="vizForm">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="vizDatasetSelect" class="form-label">Dataset</label>
+                                        <select class="form-select" id="vizDatasetSelect">
+                                            <option value="">-- Select a dataset --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="xColumnSelect" class="form-label">X-Axis</label>
+                                        <select class="form-select" id="xColumnSelect">
+                                            <option value="">-- Select column --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="yColumnSelect" class="form-label">Y-Axis</label>
+                                        <select class="form-select" id="yColumnSelect">
+                                            <option value="">-- Select column --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="chartTypeSelect" class="form-label">Chart Type</label>
+                                        <select class="form-select" id="chartTypeSelect">
+                                            <option value="bar">Bar</option>
+                                            <option value="line">Line</option>
+                                            <option value="pie">Pie</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Generate Chart</button>
+                        </form>
+                        <div class="mt-4">
+                            <canvas id="vizChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

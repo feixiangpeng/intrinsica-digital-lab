@@ -1,0 +1,55 @@
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 40px;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f1f5f9;
+}
+
+pre {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #dee2e6;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f1f5f9;
+}
+
+.dataset-item {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.dataset-item:hover {
+    background-color: #e9ecef;
+}
+
+.dataset-item.active {
+    background-color: #e2e8f0;
+    font-weight: 500;
+}

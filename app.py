@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 import pandas as pd
 import os
@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file if present
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 # Configure basic settings
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -22,7 +22,6 @@ ALLOWED_EXTENSIONS = {'csv', 'txt', 'pdf'}
 
 # Configure OpenAI
 openai_api_key = os.environ.get('OPENAI_API_KEY', '')
-# Set API key directly on the openai module
 if openai_api_key:
     openai.api_key = openai_api_key
 
@@ -40,9 +39,15 @@ raw_data_store = {}
 structured_data_store = {}
 manipulated_data_store = {}
 
-# Basic routes
+# Frontend route
 @app.route('/')
 def index():
+    """Serve the frontend application"""
+    return send_from_directory('static', 'index.html')
+
+# API routes
+@app.route('/api')
+def api_index():
     """API root endpoint with basic info"""
     return jsonify({
         'name': 'INTRINSICA Digital Lab API',
@@ -210,7 +215,7 @@ def chat_with_data():
             # Generate natural language explanation of results
             explanation_messages = [
                 {"role": "system", "content": "You are a data analysis assistant. Explain data analysis results in simple terms."},
-                {"role": "user", "content": f"Query: {query}\n\nDataset: {dataset_name}\n\nAnalysis code: {generated_code}\n\nResults: {result_df.head(5).to_markdown() if hasattr(result_df, 'to_markdown') else result_df.head(5).to_string()}\n\nPlease provide a brief explanation of these results:"}
+                {"role": "user", "content": f"Query: {query}\n\nDataset: {dataset_name}\n\nAnalysis code: {generated_code}\n\nResults: {result_df.head(5).to_string()}\n\nPlease provide a brief explanation of these results:"}
             ]
             
             explanation_response = openai.ChatCompletion.create(
