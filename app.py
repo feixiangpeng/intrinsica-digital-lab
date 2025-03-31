@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import json
 import logging
-from openai import OpenAI
+import openai
 from io import StringIO
 from dotenv import load_dotenv
 
@@ -22,7 +22,9 @@ ALLOWED_EXTENSIONS = {'csv', 'txt', 'pdf'}
 
 # Configure OpenAI
 openai_api_key = os.environ.get('OPENAI_API_KEY', '')
-client = OpenAI(api_key=openai_api_key) if openai_api_key else None
+# Set API key directly on the openai module
+if openai_api_key:
+    openai.api_key = openai_api_key
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +56,7 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'version': '0.1.0',
-        'ai_available': client is not None
+        'ai_available': bool(openai_api_key)
     })
 
 # Data Ingestion API
@@ -160,18 +162,18 @@ def chat_with_data():
     
     try:
         # Use OpenAI to interpret the query and generate code
-        if client:
+        if openai_api_key:
             messages = [
                 {"role": "system", "content": "You are a data analysis assistant. Convert natural language queries into Python pandas code. Only respond with executable code, no explanations."},
                 {"role": "user", "content": f"Dataset columns: {', '.join(df.columns)}\n\nQuery: {query}\n\nGenerate Python pandas code to answer this query using a DataFrame named 'df':"}
             ]
             
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=messages
             )
             
-            generated_code = response.choices[0].message.content.strip()
+            generated_code = response.choices[0].message['content'].strip()
             
             # Extract code if it's in a code block
             if "```python" in generated_code:
@@ -211,12 +213,12 @@ def chat_with_data():
                 {"role": "user", "content": f"Query: {query}\n\nDataset: {dataset_name}\n\nAnalysis code: {generated_code}\n\nResults: {result_df.head(5).to_markdown() if hasattr(result_df, 'to_markdown') else result_df.head(5).to_string()}\n\nPlease provide a brief explanation of these results:"}
             ]
             
-            explanation_response = client.chat.completions.create(
+            explanation_response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=explanation_messages
             )
             
-            response_data['explanation'] = explanation_response.choices[0].message.content.strip()
+            response_data['explanation'] = explanation_response.choices[0].message['content'].strip()
             
             return jsonify(response_data)
         else:
